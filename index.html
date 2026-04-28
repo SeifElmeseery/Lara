@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lara's Elite Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #f0d080;
+            --gold-dim: rgba(201, 168, 76, 0.15);
+            --dark: #0a0a0f;
+            --dark2: #12121a;
+            --dark3: #1a1a28;
+            --surface: rgba(255,255,255,0.04);
+            --border: rgba(201, 168, 76, 0.25);
+            --text: #e8e0cc;
+            --red: #c0392b;
+            --green: #1a7a4a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Art Deco Background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 90%, rgba(100,80,160,0.08) 0%, transparent 60%),
+                repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,168,76,0.015) 40px, rgba(201,168,76,0.015) 41px),
+                repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(201,168,76,0.015) 40px, rgba(201,168,76,0.015) 41px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 12s ease-in-out infinite;
+        }
+        .orb-1 { width: 400px; height: 400px; background: rgba(201,168,76,0.07); top: -100px; right: -100px; animation-delay: 0s; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(120,80,200,0.08); bottom: -80px; left: -80px; animation-delay: -5s; }
+        .orb-3 { width: 200px; height: 200px; background: rgba(201,168,76,0.05); top: 50%; left: 50%; animation-delay: -3s; }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* Corner decorations */
+        .corner-deco {
+            position: fixed;
+            width: 120px;
+            height: 120px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .corner-deco::before, .corner-deco::after {
+            content: '';
+            position: absolute;
+            background: var(--gold);
+        }
+        .corner-deco.tl { top: 20px; left: 20px; }
+        .corner-deco.tr { top: 20px; right: 20px; transform: scaleX(-1); }
+        .corner-deco.bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
+        .corner-deco.br { bottom: 20px; right: 20px; transform: scale(-1); }
+        .corner-deco::before { width: 40px; height: 2px; top: 0; left: 0; }
+        .corner-deco::after { width: 2px; height: 40px; top: 0; left: 0; }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 92%;
+            max-width: 820px;
+            background: var(--dark2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 48px 52px;
+            box-shadow: 0 0 0 1px rgba(201,168,76,0.08), 0 40px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(201,168,76,0.1);
+            animation: revealUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes revealUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Gold divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        .divider span {
+            color: var(--gold);
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Start Screen */
+        #start-screen { text-align: center; }
+
+        .name-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 5.5rem;
+            font-weight: 900;
+            line-height: 1;
+            color: transparent;
+            background: linear-gradient(135deg, #c9a84c 0%, #f0d080 40%, #c9a84c 60%, #8a6820 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            letter-spacing: -2px;
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .name-display::after {
+            content: 'Lara';
+            position: absolute;
+            inset: 0;
+            color: transparent;
+            background: linear-gradient(135deg, #c9a84c, #f0d080);
+            -webkit-background-clip: text;
+            background-clip: text;
+            filter: blur(20px);
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            color: rgba(232,224,204,0.6);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .crown { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+        .stats-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 32px 0;
+        }
+        .stat-item {
+            background: var(--dark3);
+            padding: 20px 16px;
+            text-align: center;
+        }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            font-weight: 700;
+        }
+        .stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(232,224,204,0.4);
+            margin-top: 4px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #c9a84c, #8a6820);
+            border: none;
+            color: #0a0a0f;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 18px 50px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .start-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .start-btn:hover::after { opacity: 1; }
+        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(201,168,76,0.3); }
+
+        /* Quiz Screen */
+        #quiz-screen { display: none; }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .q-counter {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: rgba(232,224,204,0.5);
+            text-transform: uppercase;
+        }
+        .q-counter span {
+            color: var(--gold);
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .timer-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .timer-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(232,224,204,0.4); }
+
+        #timer {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            min-width: 60px;
+            text-align: right;
+            transition: color 0.3s;
+        }
+        #timer.urgent { color: #e74c3c; animation: pulse 0.5s ease infinite alternate; }
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+
+        .type-badge {
+            font-size: 0.6rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            color: var(--gold);
+            background: var(--gold-dim);
+        }
+
+        /* Progress bar */
+        .progress-wrap { margin-bottom: 28px; }
+        .progress-track {
+            height: 2px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            border-radius: 2px;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Reading passage */
+        .reading-box {
+            background: var(--dark3);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--gold);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            border-radius: 4px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: rgba(232,224,204,0.85);
+            display: none;
+        }
+        .reading-box strong {
+            display: block;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        /* Listen button */
+        .listen-btn {
+            display: none;
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--dark3);
+            border: 1px solid var(--border);
+            color: var(--gold);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+        .listen-btn:hover { background: var(--gold-dim); box-shadow: 0 0 20px rgba(201,168,76,0.15); }
+
+        /* Question */
+        .question-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #fff;
+            margin-bottom: 28px;
+        }
+
+        /* Options */
+        .options-grid { display: flex; flex-direction: column; gap: 10px; }
+
+        .option-btn {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 16px 22px;
+            border-radius: 4px;
+            color: rgba(232,224,204,0.85);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-letter {
+            width: 26px;
+            height: 26px;
+            border-radius: 2px;
+            background: rgba(201,168,76,0.1);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            color: var(--gold);
+            font-weight: 700;
+            flex-shrink: 0;
+            transition: all 0.25s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: var(--gold-dim);
+            border-color: var(--border);
+            transform: translateX(6px);
+            color: #fff;
+        }
+        .option-btn:hover:not(:disabled) .option-letter {
+            background: var(--gold);
+            color: #0a0a0f;
+        }
+        .option-btn:disabled { cursor: not-allowed; transform: none; }
+
+        .option-btn.correct {
+            background: rgba(26,122,74,0.2) !important;
+            border-color: #1a7a4a !important;
+            color: #5ddd8b !important;
+        }
+        .option-btn.correct .option-letter {
+            background: #1a7a4a;
+            border-color: #1a7a4a;
+            color: #fff;
+        }
+        .option-btn.wrong {
+            background: rgba(192,57,43,0.15) !important;
+            border-color: #c0392b !important;
+            color: #e07070 !important;
+        }
+        .option-btn.wrong .option-letter {
+            background: #c0392b;
+            border-color: #c0392b;
+            color: #fff;
+        }
+
+        /* Explanation */
+        .explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 18px 22px;
+            background: rgba(201,168,76,0.06);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: rgba(232,224,204,0.8);
+            animation: fadeSlide 0.4s ease forwards;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Next button */
+        .next-btn {
+            display: none;
+            width: 100%;
+            margin-top: 16px;
+            padding: 16px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .next-btn:hover {
+            background: var(--gold);
+            color: #0a0a0f;
+            box-shadow: 0 0 30px rgba(201,168,76,0.3);
+        }
+
+        /* Result Screen */
+        #result-screen { display: none; text-align: center; }
+
+        .score-ring {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 28px;
+            position: relative;
+        }
+        .score-ring svg { transform: rotate(-90deg); }
+        .score-ring-track { fill: none; stroke: rgba(201,168,76,0.12); stroke-width: 6; }
+        .score-ring-fill {
+            fill: none; stroke: url(#goldGrad); stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 502;
+            stroke-dashoffset: 502;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .score-inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .score-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .score-total {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: rgba(232,224,204,0.4);
+            text-transform: uppercase;
+        }
+
+        .result-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: transparent;
+            background: linear-gradient(135deg, #c9a84c, #f0d080, #c9a84c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        #feedback-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.3rem;
+            color: rgba(232,224,204,0.75);
+            max-width: 480px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+
+        .retry-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 18px 44px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .retry-btn:hover { background: var(--gold); color: #0a0a0f; box-shadow: 0 0 30px rgba(201,168,76,0.3); }
+
+        @media (max-width: 600px) {
+            .container { padding: 32px 24px; }
+            .name-display { font-size: 3.8rem; }
+            .stats-preview { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="corner-deco tl"></div>
+    <div class="corner-deco tr"></div>
+    <div class="corner-deco bl"></div>
+    <div class="corner-deco br"></div>
+
+    <div class="container" id="main-container">
+
+        <!-- START SCREEN -->
+        <div id="start-screen">
+            <span class="crown">👑</span>
+            <h1 class="name-display">Lara</h1>
+            <p class="tagline">Bel-Engleezi · Elite Challenge</p>
+
+            <div class="divider"><span>◆ ◆ ◆</span></div>
+
+            <div class="stats-preview">
+                <div class="stat-item">
+                    <div class="stat-num">30</div>
+                    <div class="stat-label">Questions</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">6</div>
+                    <div class="stat-label">Sections</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">↑</div>
+                    <div class="stat-label">Advanced</div>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startQuiz()">Begin Challenge</button>
+        </div>
+
+        <!-- QUIZ SCREEN -->
+        <div id="quiz-screen">
+            <div class="hud">
+                <div class="q-counter">Q <span id="q-num">1</span> <span style="color:rgba(232,224,204,0.3)">/ 30</span></div>
+                <span class="type-badge" id="type-badge">Grammar</span>
+                <div class="timer-wrap">
+                    <span class="timer-label">Time</span>
+                    <div id="timer">20</div>
+                </div>
+            </div>
+
+            <div class="progress-wrap">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div id="reading-passage" class="reading-box">
+                <strong>📖 Read the following passage carefully</strong>
+                Dr. Laila has been working at the institute for fifteen years. When she arrived this morning, the team had already prepared all the materials. She told them, "Errors were identified last night, so every detail must be checked before it is submitted." Right now, she is reviewing the final draft carefully. By 5 PM, she will have finished the project. Interestingly, no one knows that the results will be announced at a secret ceremony next Thursday.
+            </div>
+
+            <button id="listen-btn" class="listen-btn" onclick="playAudio()">▶ Click to Listen</button>
+
+            <div class="question-text" id="question">Loading...</div>
+            <div class="options-grid" id="options"></div>
+
+            <div id="explanation" class="explanation-box"></div>
+            <button id="next-btn" class="next-btn" onclick="nextQuestion()">Continue →</button>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="result-screen">
+            <h2 class="result-name">Lara</h2>
+            <div class="divider"><span>◆ Your Score ◆</span></div>
+
+            <div class="score-ring">
+                <svg viewBox="0 0 180 180" width="180" height="180">
+                    <defs>
+                        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#c9a84c"/>
+                            <stop offset="100%" style="stop-color:#f0d080"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="score-ring-track" cx="90" cy="90" r="80"/>
+                    <circle class="score-ring-fill" id="ring-fill" cx="90" cy="90" r="80"/>
+                </svg>
+                <div class="score-inner">
+                    <div class="score-num" id="score-num">0</div>
+                    <div class="score-total">out of 30</div>
+                </div>
+            </div>
+
+            <p id="feedback-text"></p>
+            <button class="retry-btn" onclick="location.reload()">Retry Challenge ↺</button>
+        </div>
+
+    </div>
+
+    <script>
+        const LETTERS = ['A', 'B', 'C', 'D'];
+
+        const questions = [
+            // ══════════════════════════════════════════════
+            // SECTION 1: Vocabulary & Word Forms (Grammar 20s)
+            // ══════════════════════════════════════════════
+            {
+                type: 'grammar',
+                q: "Which word correctly completes the sentence: 'The lecture was so ________ that half the audience fell asleep'?",
+                options: ["boring", "bored", "bore", "boringly"],
+                correct: 0,
+                exp: "💡 -ing adjectives (boring, exhausting, terrifying) describe the THING or SITUATION causing the feeling. -ed adjectives (bored, exhausted, terrified) describe how a PERSON feels. The lecture is the cause → boring."
+            },
+            {
+                type: 'grammar',
+                q: "Choose the correct reflexive pronoun: 'The CEO ________ reviewed every contract before signing.'",
+                options: ["him", "his", "himself", "oneself"],
+                correct: 2,
+                exp: "💡 Reflexive pronouns (myself, yourself, himself, herself, itself, ourselves, themselves) are used for EMPHASIS, meaning 'he did it personally, without help.' Subject = The CEO (3rd person singular, male) → himself."
+            },
+            {
+                type: 'grammar',
+                q: "A person who refuses to change their opinion even when proven wrong is described as:",
+                options: ["confident", "stubborn", "nervous", "honest"],
+                correct: 1,
+                exp: "💡 Stubborn (عنيد) = refusing to change one's mind or behaviour. Confident = واثق من نفسه. Nervous = متوتر. Honest = صادق / أمين."
+            },
+            {
+                type: 'grammar',
+                q: "Which phrasal verb means 'to discover something accidentally or suddenly'?",
+                options: ["watch out", "find out", "hold on", "look after"],
+                correct: 1,
+                exp: "💡 Find out = اكتشف / عرف. Watch out = احترس (تحذير). Hold on = إنتظر. Look after = اعتنى بـ."
+            },
+            {
+                type: 'grammar',
+                q: "'The manager gave a ________ speech that moved everyone to tears.'  Choose the most precise word.",
+                options: ["touching", "touched", "touch", "touchable"],
+                correct: 0,
+                exp: "💡 Touching (مؤثر) is an -ing adjective describing the effect the speech has on the audience. 'Touched' describes how the audience feels, not the speech itself."
+            },
+
+            // ══════════════════════════════════════════════
+            // SECTION 2: Simple Tenses — Advanced (Grammar 20s)
+            // ══════════════════════════════════════════════
+            {
+                type: 'grammar',
+                q: "The international conference ________ on the 15th of every month according to its charter.",
+                options: ["meets", "is meeting", "will meet", "met"],
+                correct: 0,
+                exp: "💡 Scheduled or regular events that follow a fixed rule use Present Simple. 'According to its charter' signals a permanent, official arrangement — not a one-time future event."
+            },
+            {
+                type: 'grammar',
+                q: "Oil and water ________ because they have different densities.",
+                options: ["don't mix", "aren't mixing", "won't mix", "didn't mix"],
+                correct: 0,
+                exp: "💡 Scientific facts and natural laws use Present Simple. The negative is don't/doesn't + base verb. 'Because they have different densities' confirms this is a permanent truth."
+            },
+            {
+                type: 'grammar',
+                q: "— 'The ceiling is leaking!' — 'Don't panic, I ________ call the plumber right now.'",
+                options: ["am going to", "will", "am calling", "called"],
+                correct: 1,
+                exp: "💡 An unplanned decision made at the moment of speaking uses 'will'. If the plan had been made before, we'd use 'am going to'. The surprise ('The ceiling is leaking!') tells us it's a spontaneous decision."
+            },
+            {
+                type: 'grammar',
+                q: "Napoleon ________ the Battle of Waterloo in 1815, marking the end of his rule.",
+                options: ["loses", "lost", "was losing", "has lost"],
+                correct: 1,
+                exp: "💡 Past Simple is used for completed historical events with a specific time reference (1815). Napoleon is also no longer alive, ruling out Present Perfect."
+            },
+            {
+                type: 'grammar',
+                q: "Which sentence contains an error in tense?",
+                options: [
+                    "She usually wakes up at 6 AM.",
+                    "He went to London last summer.",
+                    "They will come tomorrow.",
+                    "I am knowing the answer."
+                ],
+                correct: 3,
+                exp: "💡 'Know' is a state verb (فعل حالة) describing a mental state, NOT an action. State verbs cannot be used in any continuous/progressive tense. Correct form: 'I know the answer.'"
+            },
+
+            // ══════════════════════════════════════════════
+            // SECTION 3: Continuous Tenses — Advanced (Grammar 20s)
+            // ══════════════════════════════════════════════
+            {
+                type: 'grammar',
+                q: "'She ________ her phone during every single meeting. It's so unprofessional!' — Express annoyance.",
+                options: ["checks", "is always checking", "always checks", "checked"],
+                correct: 1,
+                exp: "💡 Present Continuous + always = expressing irritation or criticism about a repeated annoying habit. 'Always checks' (Present Simple) describes a neutral habit. 'Is always checking' adds the speaker's frustration."
+            },
+            {
+                type: 'grammar',
+                q: "While the engineers ________ the bridge, a sudden storm ________ and caused a delay.",
+                options: ["were inspecting / hit", "inspected / was hitting", "inspect / hits", "were inspecting / was hitting"],
+                correct: 0,
+                exp: "💡 Two simultaneous past actions: the LONGER background action uses Past Continuous (were inspecting), and the SHORTER interrupting action uses Past Simple (hit). 'A sudden storm' signals an unexpected interruption."
+            },
+            {
+                type: 'grammar',
+                q: "This time next year, Lara ________ her final exams at university.",
+                options: ["will take", "takes", "will be taking", "is taking"],
+                correct: 2,
+                exp: "💡 'This time next year' is the key signal for Future Continuous (will be + V-ing). It describes an action that will be IN PROGRESS at a specific point in the future."
+            },
+            {
+                type: 'grammar',
+                q: "I ________ Dr. Hassan on Monday at 9 AM. His assistant confirmed it yesterday.",
+                options: ["see", "will see", "am seeing", "saw"],
+                correct: 2,
+                exp: "💡 Present Continuous can describe a FIXED FUTURE ARRANGEMENT made in advance. 'His assistant confirmed it yesterday' proves it was pre-arranged. 'Will see' would suggest a spontaneous decision."
+            },
+            {
+                type: 'grammar',
+                q: "Which verb can NOT be used in the -ing continuous form?",
+                options: ["run", "believe", "speak", "travel"],
+                correct: 1,
+                exp: "💡 'Believe' is a state verb (mental state). State verbs like believe, know, want, own, prefer, understand describe conditions, not actions, so they cannot be used in continuous tenses. The others are action verbs."
+            },
+
+            // ══════════════════════════════════════════════
+            // SECTION 4: Active & Passive Voice — Advanced (Grammar 20s)
+            // ══════════════════════════════════════════════
+            {
+                type: 'grammar',
+                q: "The new policy ________ by the board of directors next week.",
+                options: ["will announce", "will be announced", "announced", "is announced"],
+                correct: 1,
+                exp: "💡 Future Simple Passive = will be + V3. The subject (policy) receives the action (it is announced BY someone). 'Will announce' would be active — we'd need 'the board will announce the policy.'"
+            },
+            {
+                type: 'grammar',
+                q: "Which sentence is in the ACTIVE voice?",
+                options: [
+                    "The file was deleted by mistake.",
+                    "The contract must be signed immediately.",
+                    "Lara submitted the report on time.",
+                    "The award was given to the winner."
+                ],
+                correct: 2,
+                exp: "💡 Active voice: the SUBJECT performs the action. 'Lara (subject) submitted (action) the report (object).' All other options use 'was/were/be + V3' — the Passive structure."
+            },
+            {
+                type: 'grammar',
+                q: "Change to Passive: 'They should repair the road immediately.'",
+                options: [
+                    "The road should be repaired immediately.",
+                    "The road should repaired immediately.",
+                    "The road was repaired immediately.",
+                    "The road is being repaired immediately."
+                ],
+                correct: 0,
+                exp: "💡 Modal Passive structure: modal verb + be + V3. 'Should repair' → 'should be repaired'. The object 'the road' becomes the subject. 'They' is dropped as it's indefinite/unimportant."
+            },
+            {
+                type: 'grammar',
+                q: "Which of the following verbs is INTRANSITIVE and therefore CANNOT form a passive sentence?",
+                options: ["build", "discover", "sleep", "send"],
+                correct: 2,
+                exp: "💡 Intransitive verbs (sleep, arrive, happen, die, exist) have NO direct object. Passive requires an object to become the new subject. You cannot say 'Sleep is slept.' The others are transitive (you build something, discover something, send something)."
+            },
+            {
+                type: 'grammar',
+                q: "'All errors ________ before the document was published.' — Use passive for emphasis.",
+                options: ["corrected", "were correcting", "were corrected", "are corrected"],
+                correct: 2,
+                exp: "💡 Past Simple Passive = was/were + V3. Subject 'All errors' is plural → 'were corrected'. The sentence emphasises the result (errors fixed), not who fixed them."
+            },
+
+            // ══════════════════════════════════════════════
+            // SECTION 5: Listening (30s)
+            // ══════════════════════════════════════════════
+            {
+                type: 'listening',
+                audioText: "By the time the guests arrived, the chef had already prepared the three-course meal.",
+                q: "What grammar structure is used for the action that was completed BEFORE the guests arrived?",
+                options: ["Past Simple", "Past Continuous", "Past Perfect", "Present Perfect"],
+                correct: 2,
+                exp: "💡 Past Perfect (had + V3) is used for an action completed BEFORE another past action. 'Had already prepared' happened BEFORE 'the guests arrived' (Past Simple). Sequence: preparation first → guests arrive second."
+            },
+            {
+                type: 'listening',
+                audioText: "The suspect denied having stolen the documents. He claimed they had been taken by someone else.",
+                q: "In the audio, 'had been taken' is an example of:",
+                options: ["Past Simple Active", "Past Perfect Passive", "Present Perfect Passive", "Future Passive"],
+                correct: 1,
+                exp: "💡 Past Perfect Passive = had been + V3. It describes an action (taking the documents) that was completed before another past event (the suspect's claim), and the subject received the action → Passive."
+            },
+            {
+                type: 'listening',
+                audioText: "She's been feeling rather nervous lately because the final results haven't been released yet.",
+                q: "Which word in the audio is an adjective describing an emotion?",
+                options: ["released", "feeling", "nervous", "lately"],
+                correct: 2,
+                exp: "💡 Nervous is an adjective describing an emotional state (متوتر). 'Feeling' is a verb here (linking verb). 'Released' is a past participle (V3). 'Lately' is an adverb of time."
+            },
+            {
+                type: 'listening',
+                audioText: "Hold on a moment! You need to double-check every figure before submitting the final version.",
+                q: "What does 'Hold on' mean in the audio?",
+                options: ["To grab something physically", "Wait / Pause for a moment", "To end a phone call", "To carry something heavy"],
+                correct: 1,
+                exp: "💡 'Hold on' as a phrasal verb means 'wait' or 'pause'. It's used to ask someone to stop what they're doing briefly. Context clue: the speaker immediately gives an instruction after saying it."
+            },
+            {
+                type: 'listening',
+                audioText: "Watch out — the committee is always changing the deadlines without warning. It's incredibly frustrating!",
+                q: "The speaker uses 'is always changing' to express:",
+                options: ["A scheduled future event", "A scientific fact", "Annoyance at a repeated behaviour", "A completed past action"],
+                correct: 2,
+                exp: "💡 Present Continuous + always (is always changing) = expressing irritation or complaint about a habit that happens too frequently. 'It's incredibly frustrating!' confirms the speaker's annoyance."
+            },
+
+            // ══════════════════════════════════════════════
+            // SECTION 6: Reading Comprehension (40s)
+            // ══════════════════════════════════════════════
+            {
+                type: 'reading',
+                q: "What tense is used in 'she will have finished the project by 5 PM'?",
+                options: ["Future Simple", "Future Continuous", "Future Perfect", "Present Perfect"],
+                correct: 2,
+                exp: "💡 Future Perfect (will have + V3) describes an action that will be COMPLETED before a specific future time. 'By 5 PM' is the key signal — it means the action will be done before that deadline."
+            },
+            {
+                type: 'reading',
+                q: "In the passage, 'errors were identified last night' is an example of which grammar structure?",
+                options: ["Present Simple Passive", "Past Simple Passive", "Past Continuous Passive", "Future Passive"],
+                correct: 1,
+                exp: "💡 'Were identified' = Past Simple Passive (were + V3). 'Last night' confirms the past time. The Passive is used here to focus on what happened to the errors, not who found them — a professional/diplomatic choice."
+            },
+            {
+                type: 'reading',
+                q: "According to the passage, which action had ALREADY happened when Dr. Laila arrived?",
+                options: [
+                    "She reviewed the final draft.",
+                    "The results were announced.",
+                    "The team had prepared the materials.",
+                    "The ceremony was held."
+                ],
+                correct: 2,
+                exp: "💡 'When she arrived… the team had already prepared' — Past Perfect (had prepared) shows the preparation was COMPLETED before her arrival. The word 'already' reinforces the sequence."
+            },
+            {
+                type: 'reading',
+                q: "What does 'secret ceremony' imply about the event in the passage?",
+                options: [
+                    "The ceremony is open to everyone.",
+                    "The event is planned but not publicly known.",
+                    "The ceremony happened in the past.",
+                    "The ceremony was cancelled."
+                ],
+                correct: 1,
+                exp: "💡 'Secret' (سري) means something known only to a few, not the general public. The passage says 'no one knows' — confirming the ceremony is planned but confidential. The future tense 'will be announced' tells us it hasn't happened yet."
+            },
+            {
+                type: 'reading',
+                q: "'Every detail must be checked before it is submitted.' What grammar structure is used?",
+                options: [
+                    "Active Voice with Future Simple",
+                    "Modal Passive (must be + V3)",
+                    "Past Simple Passive",
+                    "Present Continuous Active"
+                ],
+                correct: 1,
+                exp: "💡 Modal Passive = modal (must) + be + V3 (checked). Used to express obligation or necessity when the focus is on the action itself, not the person performing it. 'Before it is submitted' is also Present Simple Passive (is + V3)."
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+        let timerInterval;
+        let timeLeft = 0;
+        let isAnswered = false;
+
+        function getTime(type) {
+            return type === 'reading' ? 40 : type === 'listening' ? 30 : 20;
+        }
+
+        function startQuiz() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            isAnswered = false;
+
+            const q = questions[currentQ];
+            timeLeft = getTime(q.type);
+
+            // HUD
+            document.getElementById('q-num').innerText = currentQ + 1;
+            document.getElementById('type-badge').innerText =
+                q.type === 'grammar' ? 'Grammar' : q.type === 'listening' ? 'Listening' : 'Reading';
+
+            const timer = document.getElementById('timer');
+            timer.innerText = timeLeft;
+            timer.classList.remove('urgent');
+
+            // Progress
+            document.getElementById('progress-fill').style.width = ((currentQ / questions.length) * 100) + '%';
+
+            // Question text
+            document.getElementById('question').innerText = q.q;
+
+            // Reset extras
+            document.getElementById('explanation').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+
+            // Passage / Listen
+            document.getElementById('reading-passage').style.display = q.type === 'reading' ? 'block' : 'none';
+            document.getElementById('listen-btn').style.display = q.type === 'listening' ? 'flex' : 'none';
+
+            // Build options
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span class="option-letter">${LETTERS[i]}</span><span>${opt}</span>`;
+                btn.onclick = () => selectAnswer(i);
+                optionsDiv.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            const timer = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timer.innerText = timeLeft;
+                if (timeLeft <= 5) timer.classList.add('urgent');
+                if (timeLeft <= 0) { clearInterval(timerInterval); handleTimeout(); }
+            }, 1000);
+        }
+
+        function playAudio() {
+            const q = questions[currentQ];
+            if (q.audioText) {
+                speechSynthesis.cancel();
+                const utt = new SpeechSynthesisUtterance(q.audioText);
+                utt.lang = 'en-US';
+                utt.rate = 0.85;
+                speechSynthesis.speak(utt);
+            }
+        }
+
+        function selectAnswer(idx) {
+            if (isAnswered) return;
+            isAnswered = true;
+            clearInterval(timerInterval);
+
+            const q = questions[currentQ];
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.disabled = true);
+
+            if (idx === q.correct) {
+                btns[idx].classList.add('correct');
+                score++;
+            } else {
+                btns[idx].classList.add('wrong');
+                btns[q.correct].classList.add('correct');
+                showExplanation(q.exp);
+            }
+
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function handleTimeout() {
+            if (isAnswered) return;
+            isAnswered = true;
+            const q = questions[currentQ];
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.disabled = true);
+            btns[q.correct].classList.add('correct');
+            showExplanation("⏳ Time's up!  " + q.exp);
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function showExplanation(text) {
+            const box = document.getElementById('explanation');
+            box.innerHTML = text;
+            box.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            speechSynthesis.cancel();
+            currentQ++;
+            if (currentQ < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            const rs = document.getElementById('result-screen');
+            rs.style.display = 'block';
+
+            document.getElementById('score-num').innerText = score;
+
+            // Animate ring
+            const circumference = 502;
+            const offset = circumference - (score / 30) * circumference;
+            setTimeout(() => {
+                document.getElementById('ring-fill').style.strokeDashoffset = offset;
+            }, 100);
+
+            let feedback = '';
+            if (score >= 28) feedback = "Exceptional, Lara. You've mastered every nuance — this is true command of the language. 🔥👑";
+            else if (score >= 25) feedback = "Outstanding performance! Your grammar instincts are sharp and precise. ✨";
+            else if (score >= 20) feedback = "A strong result — the fundamentals are solid. Focus on the trickier patterns and you'll be unstoppable. 💪";
+            else feedback = "A great start. Every expert began somewhere. Review the explanations and take the challenge again — you're closer than you think. 🚀";
+
+            document.getElementById('feedback-text').innerText = feedback;
+        }
+    </script>
+</body>
+</html>
